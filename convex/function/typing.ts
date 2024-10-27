@@ -39,7 +39,7 @@ export const upsert = authenticatedMutation({
       )
       .unique();
 
-    const expireAt = Date.now() + 1000 * 5;
+    const expireAt = Date.now() + 5000;
     if (existing) {
       await ctx.db.patch(existing._id, { expireAt });
       return existing._id;
@@ -49,7 +49,7 @@ export const upsert = authenticatedMutation({
         directMessage,
         expireAt,
       });
-      await ctx.scheduler.runAfter(expireAt, internal.function.typing.remove, {
+      await ctx.scheduler.runAt(expireAt, internal.function.typing.remove, {
         directMessage,
         user: ctx.user._id,
         expireAt,

@@ -1,12 +1,11 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import {
-  PendingFriendsList,
-  AcceptedFriendsList,
-} from "./_components/friends_list";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AddFriend } from "./_components/add_friend";
+import {
+  AcceptedFriendsList,
+  PendingFriendsList,
+} from "./_components/friends_list";
 
 export default function FriendsPage() {
   return (

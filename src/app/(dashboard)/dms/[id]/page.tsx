@@ -92,7 +92,18 @@ function MessageItem({ message }: { message: Message }) {
         <p className="text-xs text-muted-foreground">
           {message.sender?.username ?? "Deleted User"}
         </p>
-        <p className="text-sm ">{message.content}</p>
+        {message.deleted ? (
+          <p className="text-xs text-destructive">
+            This message was deleted.{" "}
+            {message.deletedReason && (
+              <span className="text-xs text-muted-foreground">
+                Reason: {message.deletedReason}
+              </span>
+            )}
+          </p>
+        ) : (
+          <p className="text-sm ">{message.content}</p>
+        )}
         {message.attachment && (
           <Image
             src={message.attachment}
@@ -146,6 +157,7 @@ function MessageInput({
   const [attachment, setAttachment] = useState<Id<"_storage">>();
   const [file, setFile] = useState<File>();
   const [isUploading, setIsUploading] = useState(false);
+  const removeAttachment = useMutation(api.function.storage.removeAttachment);
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -193,12 +205,27 @@ function MessageInput({
           <span className="sr-only">Attach</span>
         </Button>
         <div className="flex flex-col flex-1 gap-2">
-          {file && <ImagePreview file={file} isUploading={isUploading} />}
+          {file && (
+            <ImagePreview
+              file={file}
+              isUploading={isUploading}
+              onRemove={() => {
+                if (attachment) {
+                  removeAttachment({ storageId: attachment });
+                }
+                setFile(undefined);
+                setAttachment(undefined);
+                if (fileInputRef.current) {
+                  fileInputRef.current.value = "";
+                }
+              }}
+            />
+          )}
           <Input
             placeholder="Message"
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            onKeyDown={(e) => {
+            onKeyDown={() => {
               if (content.length > 0) {
                 sendTypingIndicator({ directMessage });
               }
@@ -224,12 +251,14 @@ function MessageInput({
 function ImagePreview({
   file,
   isUploading,
+  onRemove,
 }: {
   file: File;
   isUploading: boolean;
+  onRemove: () => void;
 }) {
   return (
-    <div className="relative w-40 h-40 overflow-hidden rounded border">
+    <div className="relative w-40 h-40 overflow-hidden rounded border group">
       <Image
         src={URL.createObjectURL(file)}
         alt="Attachment"
@@ -241,6 +270,16 @@ function ImagePreview({
           <LoaderIcon className="animate-spin size-8" />
         </div>
       )}
+      <Button
+        className="absolute top-2 right-2 group-hover:opacity-100 opacity-0 transition-opacity"
+        size="icon"
+        variant="destructive"
+        type="button"
+        onClick={onRemove}
+      >
+        <TrashIcon />
+        <span className="sr-only">Remove</span>
+      </Button>
     </div>
   );
 }

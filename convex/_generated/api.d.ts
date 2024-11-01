@@ -17,6 +17,8 @@ import type * as function_dm from "../function/dm.js";
 import type * as function_friend from "../function/friend.js";
 import type * as function_helpers from "../function/helpers.js";
 import type * as function_message from "../function/message.js";
+import type * as function_moderation from "../function/moderation.js";
+import type * as function_storage from "../function/storage.js";
 import type * as function_typing from "../function/typing.js";
 import type * as function_user from "../function/user.js";
 import type * as http from "../http.js";
@@ -34,6 +36,8 @@ declare const fullApi: ApiFromModules<{
   "function/friend": typeof function_friend;
   "function/helpers": typeof function_helpers;
   "function/message": typeof function_message;
+  "function/moderation": typeof function_moderation;
+  "function/storage": typeof function_storage;
   "function/typing": typeof function_typing;
   "function/user": typeof function_user;
   http: typeof http;
